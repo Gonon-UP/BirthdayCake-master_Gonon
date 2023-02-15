@@ -9,6 +9,10 @@ import android.view.SurfaceView;
 
 public class CakeView extends SurfaceView {
 
+    // Declaring a private instance variable of type CakeModel named _Cake
+    private CakeModel _Cake;
+
+
     /* These are the paints we'll use to draw the birthday cake below */
     Paint cakePaint = new Paint();
     Paint frostingPaint = new Paint();
@@ -35,13 +39,15 @@ public class CakeView extends SurfaceView {
     public static final float innerFlameRadius = 15.0f;
 
 
-
     /**
      * ctor must be overridden here as per standard Java inheritance practice.  We need it
      * anyway to initialize the member variables
      */
     public CakeView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        // Initializing with a new CakeModel object
+        _Cake = new CakeModel();
 
         //This is essential or your onDraw method won't get called
         setWillNotDraw(false);
@@ -64,6 +70,12 @@ public class CakeView extends SurfaceView {
 
     }
 
+    // Getter method for CakeView
+    public CakeModel getCakeModel() {
+        return _Cake;
+    } // Rename cakeModel
+
+
     /**
      * draws a candle at a specified position.  Important:  the left, bottom coordinates specify
      * the position of the bottom left corner of the candle
@@ -71,35 +83,39 @@ public class CakeView extends SurfaceView {
     public void drawCandle(Canvas canvas, float left, float bottom) {
         canvas.drawRect(left, bottom - candleHeight, left + candleWidth, bottom, candlePaint);
 
-        //draw the outer flame
-        float flameCenterX = left + candleWidth/2;
-        float flameCenterY = bottom - wickHeight - candleHeight - outerFlameRadius/3;
-        canvas.drawCircle(flameCenterX, flameCenterY, outerFlameRadius, outerFlamePaint);
 
-        //draw the inner flame
-        flameCenterY += outerFlameRadius/3;
-        canvas.drawCircle(flameCenterX, flameCenterY, innerFlameRadius, innerFlamePaint);
+        if (getCakeModel().isLit == true) {
+            // if (_Cake.isLit == true) {
+            //draw the outer flame
+            float flameCenterX = left + candleWidth / 2;
+            float flameCenterY = bottom - wickHeight - candleHeight - outerFlameRadius / 3;
+            canvas.drawCircle(flameCenterX, flameCenterY, outerFlameRadius, outerFlamePaint);
 
+            //draw the inner flame
+            flameCenterY += outerFlameRadius / 3;
+            canvas.drawCircle(flameCenterX, flameCenterY, innerFlameRadius, innerFlamePaint);
+
+        }
         //draw the wick
-        float wickLeft = left + candleWidth/2 - wickWidth/2;
+        float wickLeft = left + candleWidth / 2 - wickWidth / 2;
         float wickTop = bottom - wickHeight - candleHeight;
         canvas.drawRect(wickLeft, wickTop, wickLeft + wickWidth, wickTop + wickHeight, wickPaint);
-
     }
+
 
     /**
      * onDraw is like "paint" in a regular Java program.  While a Canvas is
      * conceptually similar to a Graphics in javax.swing, the implementation has
      * many subtle differences.  Show care and read the documentation.
-     *
+     * <p>
      * This method will draw a birthday cake
      */
     @Override
-    public void onDraw(Canvas canvas)
-    {
+    public void onDraw(Canvas canvas) {
         //top and bottom are used to keep a running tally as we progress down the cake layers
         float top = cakeTop;
         float bottom = cakeTop + frostHeight;
+
 
         //Frosting on top
         canvas.drawRect(cakeLeft, top, cakeLeft + cakeWidth, bottom, frostingPaint);
@@ -120,9 +136,49 @@ public class CakeView extends SurfaceView {
         canvas.drawRect(cakeLeft, top, cakeLeft + cakeWidth, bottom, cakePaint);
 
         //Now a candle in the center
-        drawCandle(canvas, cakeLeft + cakeWidth/3, cakeTop);
-        drawCandle(canvas, cakeLeft + cakeWidth/3 + cakeWidth/3, cakeTop);
-    }//onDraw
 
-}//class CakeView
+        if (getCakeModel().getHasCandles() == true) {
+            for (int i = 0; i <= getCakeModel().getNumCandles(); i++)    {
+                drawCandle(canvas, cakeLeft + (cakeWidth / (getCakeModel().getNumCandles() + 1)) * i - (candleWidth / i), cakeTop);
+            }
+        }
+
+//            if (getCakeModel().getNumCandles() == 1) { // Correct
+//                drawCandle(canvas, cakeLeft + cakeWidth / 2, cakeTop);
+//                // drawCandle(canvas, cakeLeft + cakeWidth / 2 + cakeWidth / 2, cakeTop);
+//            }
+//
+//            else if (getCakeModel().getNumCandles() == 2) {
+//                drawCandle(canvas, cakeLeft + cakeWidth / 3, cakeTop);
+//                drawCandle(canvas, cakeLeft + cakeWidth / 3 + cakeWidth / 3, cakeTop);
+//            } // Draw 2
+//
+//            else if (getCakeModel().getNumCandles() == 3) {
+//                drawCandle(canvas, cakeLeft + cakeWidth / 4, cakeTop);
+//                drawCandle(canvas, cakeLeft + cakeWidth / 4 + cakeWidth / 4, cakeTop);
+//                drawCandle(canvas, cakeLeft + (cakeWidth / 4) * 3, cakeTop);
+//            } // Draw 3
+//
+//            else if (getCakeModel().getNumCandles() == 4) {
+//                drawCandle(canvas, cakeLeft + cakeWidth / 5, cakeTop);
+//                drawCandle(canvas, cakeLeft + cakeWidth / 5 + cakeWidth / 5, cakeTop);
+//                drawCandle(canvas, cakeLeft + (cakeWidth / 5) * 3, cakeTop);
+//                drawCandle(canvas, cakeLeft + (cakeWidth / 5) * 4, cakeTop);
+//            } // Draw 4
+//
+//            else if (getCakeModel().getNumCandles() == 5) {
+//                drawCandle(canvas, cakeLeft + cakeWidth / 6, cakeTop);
+//                drawCandle(canvas, cakeLeft + cakeWidth / 6 + cakeWidth / 6, cakeTop);
+//                drawCandle(canvas, cakeLeft + (cakeWidth / 6) * 3, cakeTop);
+//                drawCandle(canvas, cakeLeft + (cakeWidth / 6) * 4, cakeTop);
+//                drawCandle(canvas, cakeLeft + (cakeWidth / 6) * 5, cakeTop);
+//            } // Draw 5 candles
+//
+//            else {
+//                // Draw no candles
+//            }
+//        }
+
+    }//class CakeView
+}
 
